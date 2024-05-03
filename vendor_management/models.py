@@ -7,10 +7,10 @@ class Vendor(models.Model):
     contact_details = models.TextField()
     address = models.TextField()
     vendor_code = models.CharField(max_length=256, unique=True)
-    on_time_delivery_rate = models.FloatField(default=None)
-    quality_rating_avg = models.FloatField(default=None)
-    average_response_time = models.FloatField(default=None)
-    fulfillment_rate = models.FloatField(default=None)
+    on_time_delivery_rate = models.FloatField(default=None, null=True)
+    quality_rating_avg = models.FloatField(default=None, null=True)
+    average_response_time = models.FloatField(default=None, null=True)
+    fulfillment_rate = models.FloatField(default=None, null=True)
 
 
 class PurchaseOrder(models.Model):
@@ -40,7 +40,7 @@ class PurchaseOrder(models.Model):
 class HistoricalPerformance(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.PROTECT)
     date = models.DateTimeField(auto_now=True)
-    on_time_delivery_rate = models.FloatField(default=None)
-    quality_rating_avg = models.FloatField(default=None)
-    average_response_time = models.FloatField(default=None)
-    fulfillment_rate = models.FloatField(default=None)
+    on_time_delivery_rate = models.FloatField(default=None, null=True)
+    quality_rating_avg = models.FloatField(default=None, null=True)
+    average_response_time = models.FloatField(default=None, null=True)
+    fulfillment_rate = models.FloatField(default=None, null=True)
