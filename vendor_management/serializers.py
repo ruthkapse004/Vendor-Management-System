@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from datetime import datetime, timedelta
 from .models import Vendor, PurchaseOrder
 
 
@@ -27,3 +28,20 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
         model = PurchaseOrder
         fields = ['po_number', 'vendor', 'order_date', 'delivery_date', 'items',
                   'quantity', 'status', 'quality_rating', 'issue_date', 'acknowledgment_date']
+
+    def save(self, **kwargs):
+        request = self.context.get('request')
+
+        # We add po_number & delivery_date only when for POST request.
+        if request.method == "POST":
+            # Generate the unique PO number
+            po_number = "".join(str(datetime.now().timestamp()).split('.'))
+
+            # Generate Expected or actual delivery date of the order.
+            current_datetime = datetime.now()
+            delivery_date = current_datetime + timedelta(days=7)
+
+            self.validated_data['po_number'] = po_number
+            self.validated_data['delivery_date'] = delivery_date
+
+        return super().save(**kwargs)

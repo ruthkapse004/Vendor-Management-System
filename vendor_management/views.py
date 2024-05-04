@@ -13,6 +13,10 @@ class VendorViewSet(ModelViewSet):
     queryset = Vendor.objects.all()
     serializer_class = VendorSerializer
 
+    # context passed to serializer to access request inside serializer.
+    def get_serializer_context(self):
+        return {'request': self.request}
+
     def retrieve(self, request, *args, **kwargs):
         # Remove the default behavior of retrieving by pk
         instance = None
