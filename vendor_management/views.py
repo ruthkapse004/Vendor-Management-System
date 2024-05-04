@@ -34,8 +34,16 @@ class VendorViewSet(ModelViewSet):
 class PurchaseOrderViewSet(ModelViewSet):
     http_method_names = ['get', 'put', 'post', 'delete']
 
-    queryset = PurchaseOrder.objects.all()
     serializer_class = PurchaseOrderSerializer
+
+    def get_queryset(self):
+        queryset = PurchaseOrder.objects.all()
+        vendor = self.request.query_params.get('vendor')
+
+        if vendor:
+            queryset = queryset.filter(vendor=vendor)
+
+        return queryset
 
     def retrieve(self, request, *args, **kwargs):
         # Remove the default behavior of retrieving by pk
