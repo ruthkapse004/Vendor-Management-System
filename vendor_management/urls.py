@@ -5,7 +5,6 @@ from . import views
 
 router = DefaultRouter()
 router.register('vendors', views.VendorViewSet)
+router.register('purchase_orders', views.PurchaseOrderViewSet)
 
-urlpatterns = [
-    path('', include(router.urls)),
-]
+urlpatterns = router.urls

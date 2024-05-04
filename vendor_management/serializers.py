@@ -21,6 +21,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
     delivery_date = serializers.DateTimeField(read_only=True)
     status = serializers.CharField(read_only=True)
     issue_date = serializers.DateTimeField(read_only=True)
+    acknowledgment_date = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = PurchaseOrder
