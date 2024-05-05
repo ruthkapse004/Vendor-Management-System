@@ -17,6 +17,9 @@ class Vendor(models.Model):
     class Meta():
         db_table = 'vendor'
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class PurchaseOrder(models.Model):
     STATUS_COMPLETED = 'C'
@@ -45,6 +48,9 @@ class PurchaseOrder(models.Model):
 
     class Meta():
         db_table = 'purchase_order'
+
+    def __str__(self) -> str:
+        return self.po_number
 
 
 class HistoricalPerformance(models.Model):
