@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from . import views
+from . import views, login
 
 
 router = DefaultRouter()
@@ -11,5 +11,6 @@ router.register('purchase_orders', views.PurchaseOrderViewSet,
 urlpatterns = [
     path('', include(router.urls)),
     path('purchase_orders/<str:po_number>/acknowledge/', views.acknowledge_po),
+    path('login/', login.UserLoginView.as_view()),
 
 ]

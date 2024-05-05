@@ -1,8 +1,11 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models.manager import BaseManager
+from django.http.request import HttpRequest
 from rest_framework import status
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 from .models import Vendor, PurchaseOrder
 from .serializers import VendorSerializer, PurchaseOrderSerializer
 from datetime import datetime
@@ -10,19 +13,19 @@ from datetime import datetime
 
 # Create your views here.
 class VendorViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
     http_method_names = ['get', 'put', 'post', 'delete']
 
     queryset = Vendor.objects.all()
     serializer_class = VendorSerializer
 
     # context passed to serializer to access request inside serializer.
-    def get_serializer_context(self):
+    def get_serializer_context(self) -> dict[str, HttpRequest]:
         return {'request': self.request}
 
-    def retrieve(self, request, *args, **kwargs):
-        # Remove the default behavior of retrieving by pk
+    def retrieve(self, request, *args, **kwargs) -> Response:
         instance = None
-        # Assume product_code is used instead of pk
+        # Assume product_code is used instead of id
         vendor_code = kwargs.get('pk')
         if vendor_code is not None:
             queryset = self.filter_queryset(self.get_queryset())
@@ -32,7 +35,7 @@ class VendorViewSet(ModelViewSet):
                 return Response(serializer.data)
         return Response({"Error": "No Vendor found with requested vendor_code."}, status=status.HTTP_404_NOT_FOUND)
 
-    def update(self, request, *args, **kwargs):
+    def update(self, request, *args, **kwargs) -> Response:
         vendor_code = kwargs.get('pk')
         try:
             instance = self.get_queryset().get(vendor_code=vendor_code)
@@ -43,7 +46,7 @@ class VendorViewSet(ModelViewSet):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def destroy(self, request, *args, **kwargs):
+    def destroy(self, request, *args, **kwargs) -> Response:
         vendor_code = kwargs.get('pk')
         try:
             instance = self.get_queryset().get(vendor_code=vendor_code)
@@ -56,18 +59,19 @@ class VendorViewSet(ModelViewSet):
 
 
 class PurchaseOrderViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
     http_method_names = ['get', 'put', 'post', 'delete']
 
     serializer_class = PurchaseOrderSerializer
 
-    def get_queryset(self):
+    def get_queryset(self) -> BaseManager[PurchaseOrder]:
         queryset = PurchaseOrder.objects.all()
         vendor = self.request.query_params.get('vendor')
         if vendor:
             queryset = queryset.filter(vendor=vendor)
         return queryset
 
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(self, request, *args, **kwargs) -> Response:
         # Remove the default behavior of retrieving by pk
         instance = None
         # Assume product_code is used instead of pk
@@ -80,7 +84,7 @@ class PurchaseOrderViewSet(ModelViewSet):
                 return Response(serializer.data)
         return Response({"Error": "No Order found with requested po_number."}, status=status.HTTP_404_NOT_FOUND)
 
-    def update(self, request, *args, **kwargs):
+    def update(self, request, *args, **kwargs) -> Response:
         po_number = kwargs.get('pk')
         try:
             instance = self.get_queryset().get(po_number=po_number)
@@ -91,7 +95,7 @@ class PurchaseOrderViewSet(ModelViewSet):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def destroy(self, request, *args, **kwargs):
+    def destroy(self, request, *args, **kwargs) -> Response:
         po_number = kwargs.get('pk')
         try:
             instance = self.get_queryset().get(po_number=po_number)
@@ -102,7 +106,8 @@ class PurchaseOrderViewSet(ModelViewSet):
 
 
 @api_view(['POST'])
-def acknowledge_po(request, po_number):
+def acknowledge_po(request, po_number) -> Response:
+    permission_classes = [IsAuthenticated]
     try:
         purchase_order = PurchaseOrder.objects.get(po_number=po_number)
     except:
