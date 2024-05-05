@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
@@ -28,7 +29,30 @@ class VendorViewSet(ModelViewSet):
             if instance is not None:
                 serializer = self.get_serializer(instance)
                 return Response(serializer.data)
-        return Response({"Error": "No Vendor matches the given query."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"Error": "No Vendor found with requested vendor_code."}, status=status.HTTP_404_NOT_FOUND)
+
+    def update(self, request, *args, **kwargs):
+        vendor_code = kwargs.get('pk')
+        try:
+            instance = self.get_queryset().get(vendor_code=vendor_code)
+            serializer = self.get_serializer(instance, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except:
+            return Response({"Error": "No Vendor found with requested vendor_code."}, status=status.HTTP_404_NOT_FOUND)
+
+    def destroy(self, request, *args, **kwargs):
+        vendor_code = kwargs.get('pk')
+        try:
+            instance = self.get_queryset().get(vendor_code=vendor_code)
+            print(instance, vendor_code)
+            instance.delete()
+        except ObjectDoesNotExist:
+            return Response({"Error": f"No Vendor found with requested vendor_code."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as ex:
+            return Response({"Error": ex}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"Detail": "Order deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
 
 class PurchaseOrderViewSet(ModelViewSet):
