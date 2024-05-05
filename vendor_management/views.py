@@ -36,18 +36,17 @@ class VendorViewSet(ModelViewSet):
         vendor_code = kwargs.get('pk')
         try:
             instance = self.get_queryset().get(vendor_code=vendor_code)
-            serializer = self.get_serializer(instance, data=request.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except:
+        except ObjectDoesNotExist:
             return Response({"Error": "No Vendor found with requested vendor_code."}, status=status.HTTP_404_NOT_FOUND)
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def destroy(self, request, *args, **kwargs):
         vendor_code = kwargs.get('pk')
         try:
             instance = self.get_queryset().get(vendor_code=vendor_code)
-            print(instance, vendor_code)
             instance.delete()
         except ObjectDoesNotExist:
             return Response({"Error": f"No Vendor found with requested vendor_code."}, status=status.HTTP_404_NOT_FOUND)
@@ -85,19 +84,19 @@ class PurchaseOrderViewSet(ModelViewSet):
         po_number = kwargs.get('pk')
         try:
             instance = self.get_queryset().get(po_number=po_number)
-            serializer = self.get_serializer(instance, data=request.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except:
+        except ObjectDoesNotExist:
             return Response({"Error": "No order found with requested po_number."}, status=status.HTTP_404_NOT_FOUND)
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def destroy(self, request, *args, **kwargs):
         po_number = kwargs.get('pk')
         try:
             instance = self.get_queryset().get(po_number=po_number)
             instance.delete()
-        except:
+        except ObjectDoesNotExist:
             return Response({"Error": "No order found with requested po_number."}, status=status.HTTP_404_NOT_FOUND)
         return Response({"detail": "Order deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
