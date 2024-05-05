@@ -39,10 +39,8 @@ class PurchaseOrderViewSet(ModelViewSet):
     def get_queryset(self):
         queryset = PurchaseOrder.objects.all()
         vendor = self.request.query_params.get('vendor')
-
         if vendor:
             queryset = queryset.filter(vendor=vendor)
-
         return queryset
 
     def retrieve(self, request, *args, **kwargs):
@@ -56,4 +54,24 @@ class PurchaseOrderViewSet(ModelViewSet):
             if instance is not None:
                 serializer = self.get_serializer(instance)
                 return Response(serializer.data)
-        return Response({"Error": "No Vendor matches the given query."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"Error": "No Order found with requested po_number."}, status=status.HTTP_404_NOT_FOUND)
+
+    def update(self, request, *args, **kwargs):
+        po_number = kwargs.get('pk')
+        try:
+            instance = self.get_queryset().get(po_number=po_number)
+            serializer = self.get_serializer(instance, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except:
+            return Response({"Error": "No order found with requested po_number."}, status=status.HTTP_404_NOT_FOUND)
+
+    def destroy(self, request, *args, **kwargs):
+        po_number = kwargs.get('pk')
+        try:
+            instance = self.get_queryset().get(po_number=po_number)
+            instance.delete()
+        except:
+            return Response({"Error": "No order found with requested po_number."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"detail": "Order deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
