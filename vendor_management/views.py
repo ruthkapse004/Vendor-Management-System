@@ -2,9 +2,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from .models import Vendor, PurchaseOrder
 from .serializers import VendorSerializer, PurchaseOrderSerializer
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 # Create your views here.
@@ -99,3 +100,18 @@ class PurchaseOrderViewSet(ModelViewSet):
         except:
             return Response({"Error": "No order found with requested po_number."}, status=status.HTTP_404_NOT_FOUND)
         return Response({"detail": "Order deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+def acknowledge_po(request, po_number):
+    try:
+        purchase_order = PurchaseOrder.objects.get(po_number=po_number)
+    except:
+        return Response({"Error": "No order found with requested po_number."}, status=status.HTTP_404_NOT_FOUND)
+
+    if not purchase_order.acknowledgment_date:
+        purchase_order.acknowledgment_date = datetime.now()
+        purchase_order.save()
+        return Response({"Success": "Your PO is acknowledged."}, status=status.HTTP_201_CREATED)
+    else:
+        return Response({"Detail": "Your PO is already acknowledged."}, status=status.HTTP_208_ALREADY_REPORTED)

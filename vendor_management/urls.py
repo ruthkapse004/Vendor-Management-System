@@ -8,4 +8,8 @@ router.register('vendors', views.VendorViewSet)
 router.register('purchase_orders', views.PurchaseOrderViewSet,
                 basename='purchase_orders')
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('', include(router.urls)),
+    path('purchase_orders/<str:po_number>/acknowledge/', views.acknowledge_po),
+
+]
