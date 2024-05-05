@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 from uuid import uuid4
 
 
@@ -30,10 +31,12 @@ class PurchaseOrder(models.Model):
     order_date = models.DateTimeField(auto_now_add=True)
     delivery_date = models.DateTimeField()
     items = models.JSONField()
-    quantity = models.IntegerField()
+    quantity = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(20)])
     status = models.CharField(
         max_length=1, choices=STATUS_CHOICES, default=STATUS_PENDING)
-    quality_rating = models.FloatField(null=True)
+    quality_rating = models.FloatField(
+        null=True, validators=[MinValueValidator(0), MaxValueValidator(5)])
     issue_date = models.DateTimeField(auto_now_add=True)
     acknowledgment_date = models.DateTimeField(null=True)
 
