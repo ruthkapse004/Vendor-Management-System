@@ -14,6 +14,9 @@ class Vendor(models.Model):
     average_response_time = models.FloatField(default=None, null=True)
     fulfillment_rate = models.FloatField(default=None, null=True)
 
+    class Meta():
+        db_table = 'vendor'
+
 
 class PurchaseOrder(models.Model):
     STATUS_COMPLETED = 'C'
@@ -40,6 +43,9 @@ class PurchaseOrder(models.Model):
     issue_date = models.DateTimeField(auto_now_add=True)
     acknowledgment_date = models.DateTimeField(null=True)
 
+    class Meta():
+        db_table = 'purchase_order'
+
 
 class HistoricalPerformance(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.PROTECT)
@@ -48,3 +54,6 @@ class HistoricalPerformance(models.Model):
     quality_rating_avg = models.FloatField(default=None, null=True)
     average_response_time = models.FloatField(default=None, null=True)
     fulfillment_rate = models.FloatField(default=None, null=True)
+
+    class Meta():
+        db_table = 'historical_performance'
