@@ -52,7 +52,7 @@ class VendorViewSet(ModelViewSet):
             return Response({"Error": f"No Vendor found with requested vendor_code."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as ex:
             return Response({"Error": ex}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"Detail": "Order deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"Detail": "Vendor deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
 
 class PurchaseOrderViewSet(ModelViewSet):
