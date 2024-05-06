@@ -18,7 +18,7 @@ class PerformanceSerializer(serializers.ModelSerializer):
                   'quality_rating_avg', 'average_response_time', 'fulfillment_rate']
 
 
-class PurchaseOrderSerializer(serializers.ModelSerializer):
+class RetrievePurchaseOrderSerializer(serializers.ModelSerializer):
     po_number = serializers.CharField(read_only=True)
     order_date = serializers.DateField(read_only=True)
     issue_date = serializers.DateTimeField(read_only=True)
@@ -32,6 +32,14 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
 
     def get_vendor_code(self, obj) -> str:
         return str(obj.vendor.vendor_code)
+
+
+class PurchaseOrderSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PurchaseOrder
+        fields = ['vendor',  'delivery_date', 'items',
+                  'quantity', 'status', 'quality_rating',]
 
     def save(self, **kwargs):
         request = self.context.get('request')
