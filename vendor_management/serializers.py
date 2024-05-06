@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from datetime import datetime, timedelta
+from datetime import datetime
 from .models import Vendor, PurchaseOrder
 
 
@@ -13,6 +13,13 @@ class VendorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vendor
         fields = ['vendor_code', 'name', 'contact_details', 'address', 'on_time_delivery_rate',
+                  'quality_rating_avg', 'average_response_time', 'fulfillment_rate']
+
+
+class PerformanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vendor
+        fields = ['vendor_code', 'on_time_delivery_rate',
                   'quality_rating_avg', 'average_response_time', 'fulfillment_rate']
 
 
