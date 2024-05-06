@@ -22,14 +22,16 @@ class Vendor(models.Model):
 
 
 class PurchaseOrder(models.Model):
-    STATUS_COMPLETED = 'C'
-    STATUS_CANCELED = 'D'
+    STATUS_DELIVERED = 'D'
+    STATUS_CANCELED = 'C'
     STATUS_PENDING = 'P'
+    STATUS_ISSUED = 'I'
 
     STATUS_CHOICES = [
-        (STATUS_COMPLETED, 'Completed'),
-        (STATUS_CANCELED, 'Canceled'),
         (STATUS_PENDING, 'Pending'),
+        (STATUS_ISSUED, 'Issued'),
+        (STATUS_CANCELED, 'Canceled'),
+        (STATUS_DELIVERED, 'Delivered'),
     ]
 
     po_number = models.CharField(max_length=256, unique=True)
