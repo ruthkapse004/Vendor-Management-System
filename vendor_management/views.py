@@ -85,7 +85,12 @@ class PurchaseOrderViewSet(ModelViewSet):
         return Response({"Error": "No Order found with requested po_number."}, status=status.HTTP_404_NOT_FOUND)
 
     def update(self, request, *args, **kwargs) -> Response:
+        if request.data['status'] == "D" and not request.data['quality_rating']:
+            return Response({"Error": "Quality rating not provided."}, status=status.HTTP_400_BAD_REQUEST)
         po_number = kwargs.get('pk')
+        if request.data['status'] == "D" and PurchaseOrder.objects.filter(po_number=po_number, acknowledgment_date__isnull=True).exists():
+            return Response({"Error": "PO is not acknowledged by the vendor."}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             instance = self.get_queryset().get(po_number=po_number)
         except ObjectDoesNotExist:

@@ -18,9 +18,7 @@ class VendorSerializer(serializers.ModelSerializer):
 
 class PurchaseOrderSerializer(serializers.ModelSerializer):
     po_number = serializers.CharField(read_only=True)
-    order_date = serializers.DateTimeField(read_only=True)
-    delivery_date = serializers.DateTimeField(read_only=True)
-    status = serializers.CharField(read_only=True)
+    order_date = serializers.DateField(read_only=True)
     issue_date = serializers.DateTimeField(read_only=True)
     acknowledgment_date = serializers.DateTimeField(read_only=True)
 
@@ -38,10 +36,13 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
             po_number = "".join(str(datetime.now().timestamp()).split('.'))
 
             # Generate Expected or actual delivery date of the order.
-            current_datetime = datetime.now()
-            delivery_date = current_datetime + timedelta(days=7)
-
+            self.validated_data['issue_date'] = None
             self.validated_data['po_number'] = po_number
-            self.validated_data['delivery_date'] = delivery_date
-
+            self.validated_data['delivery_date'] = request.data['delivery_date']
+        if request.method == "PUT":
+            if request.data['status'] == "I":
+                self.validated_data['issue_date'] = datetime.now()
+            elif request.data['status'] == "D":
+                now_date = datetime.now().date()
+                self.validated_data['delivery_date'] = now_date
         return super().save(**kwargs)
