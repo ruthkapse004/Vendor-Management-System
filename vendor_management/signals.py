@@ -58,7 +58,7 @@ def calculate_quality_avg_rating(instance, perf_qs, po_qs, new_record):
     sum_prev_quality_rating = prev_quality_rating_avg * total_no_completed_po
     new_sum = sum_prev_quality_rating + instance.quality_rating
     new_quality_avg = new_sum / (total_no_completed_po + 1)
-    return new_quality_avg
+    return round(new_quality_avg, 2)
 
 
 def calculate_fullfilment_rate(instance, po_qs):

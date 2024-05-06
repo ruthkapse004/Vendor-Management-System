@@ -5,15 +5,10 @@ from .models import Vendor, PurchaseOrder
 
 class VendorSerializer(serializers.ModelSerializer):
     vendor_code = serializers.CharField(read_only=True)
-    on_time_delivery_rate = serializers.FloatField(read_only=True)
-    quality_rating_avg = serializers.FloatField(read_only=True)
-    average_response_time = serializers.FloatField(read_only=True)
-    fulfillment_rate = serializers.FloatField(read_only=True)
 
     class Meta:
         model = Vendor
-        fields = ['vendor_code', 'name', 'contact_details', 'address', 'on_time_delivery_rate',
-                  'quality_rating_avg', 'average_response_time', 'fulfillment_rate']
+        fields = ['vendor_code', 'name', 'contact_details', 'address']
 
 
 class PerformanceSerializer(serializers.ModelSerializer):
@@ -28,11 +23,15 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
     order_date = serializers.DateField(read_only=True)
     issue_date = serializers.DateTimeField(read_only=True)
     acknowledgment_date = serializers.DateTimeField(read_only=True)
+    vendor_code = serializers.SerializerMethodField()
 
     class Meta:
         model = PurchaseOrder
-        fields = ['po_number', 'vendor', 'order_date', 'delivery_date', 'items',
+        fields = ['po_number', 'vendor_code', 'order_date', 'delivery_date', 'items',
                   'quantity', 'status', 'quality_rating', 'issue_date', 'acknowledgment_date']
+
+    def get_vendor_code(self, obj) -> str:
+        return str(obj.vendor.vendor_code)
 
     def save(self, **kwargs):
         request = self.context.get('request')
