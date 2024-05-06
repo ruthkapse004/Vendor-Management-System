@@ -5,9 +5,10 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from .models import Vendor, PurchaseOrder
-from .serializers import VendorSerializer, PurchaseOrderSerializer
+from .serializers import VendorSerializer, PerformanceSerializer, PurchaseOrderSerializer
 from datetime import datetime
 
 
@@ -124,3 +125,15 @@ def acknowledge_po(request, po_number) -> Response:
         return Response({"Success": "Your PO is acknowledged."}, status=status.HTTP_201_CREATED)
     else:
         return Response({"Detail": "Your PO is already acknowledged."}, status=status.HTTP_208_ALREADY_REPORTED)
+
+
+class PerformanceAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, vendor_code) -> Response:
+        try:
+            vendor = Vendor.objects.get(vendor_code=vendor_code)
+            serializer = PerformanceSerializer(vendor)
+            return Response(serializer.data)
+        except Vendor.DoesNotExist:
+            return Response({"Error": "No Vendor found with requested vendor_code."}, status=status.HTTP_404_NOT_FOUND)

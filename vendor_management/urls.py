@@ -9,8 +9,10 @@ router.register('purchase_orders', views.PurchaseOrderViewSet,
                 basename='purchase_orders')
 
 urlpatterns = [
+    path('login/', login.UserLoginView.as_view()),
     path('', include(router.urls)),
     path('purchase_orders/<str:po_number>/acknowledge/', views.acknowledge_po),
-    path('login/', login.UserLoginView.as_view()),
+    path('vendors/<str:vendor_code>/performance/',
+         views.PerformanceAPIView.as_view()),
 
 ]
