@@ -1,4 +1,3 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.manager import BaseManager
 from django.http.request import HttpRequest
 from rest_framework import status
@@ -40,7 +39,7 @@ class VendorViewSet(ModelViewSet):
         vendor_code = kwargs.get('pk')
         try:
             instance = self.get_queryset().get(vendor_code=vendor_code)
-        except ObjectDoesNotExist:
+        except instance.DoesNotExist:
             return Response({"Error": "No Vendor found with requested vendor_code."}, status=status.HTTP_404_NOT_FOUND)
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -52,7 +51,7 @@ class VendorViewSet(ModelViewSet):
         try:
             instance = self.get_queryset().get(vendor_code=vendor_code)
             instance.delete()
-        except ObjectDoesNotExist:
+        except instance.DoesNotExist:
             return Response({"Error": f"No Vendor found with requested vendor_code."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as ex:
             return Response({"Error": ex}, status=status.HTTP_400_BAD_REQUEST)
@@ -94,7 +93,7 @@ class PurchaseOrderViewSet(ModelViewSet):
 
         try:
             instance = self.get_queryset().get(po_number=po_number)
-        except ObjectDoesNotExist:
+        except instance.DoesNotExist:
             return Response({"Error": "No order found with requested po_number."}, status=status.HTTP_404_NOT_FOUND)
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -106,7 +105,7 @@ class PurchaseOrderViewSet(ModelViewSet):
         try:
             instance = self.get_queryset().get(po_number=po_number)
             instance.delete()
-        except ObjectDoesNotExist:
+        except instance.DoesNotExist:
             return Response({"Error": "No order found with requested po_number."}, status=status.HTTP_404_NOT_FOUND)
         return Response({"detail": "Order deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
@@ -116,7 +115,7 @@ def acknowledge_po(request, po_number) -> Response:
     permission_classes = [IsAuthenticated]
     try:
         purchase_order = PurchaseOrder.objects.get(po_number=po_number)
-    except:
+    except PurchaseOrder.DoesNotExist:
         return Response({"Error": "No order found with requested po_number."}, status=status.HTTP_404_NOT_FOUND)
 
     if not purchase_order.acknowledgment_date:
