@@ -1,7 +1,7 @@
 from django.db.models.manager import BaseManager
 from django.http.request import HttpRequest
+from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -110,20 +110,18 @@ class PurchaseOrderViewSet(ModelViewSet):
         return Response({"detail": "Order deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['POST'])
-def acknowledge_po(request, po_number) -> Response:
+class AcknowledgePO(APIView):
     permission_classes = [IsAuthenticated]
-    try:
-        purchase_order = PurchaseOrder.objects.get(po_number=po_number)
-    except PurchaseOrder.DoesNotExist:
-        return Response({"Error": "No order found with requested po_number."}, status=status.HTTP_404_NOT_FOUND)
 
-    if not purchase_order.acknowledgment_date:
-        purchase_order.acknowledgment_date = datetime.now()
-        purchase_order.save()
-        return Response({"Success": "Your PO is acknowledged."}, status=status.HTTP_201_CREATED)
-    else:
-        return Response({"Detail": "Your PO is already acknowledged."}, status=status.HTTP_208_ALREADY_REPORTED)
+    def post(self, request, po_number):
+        purchase_order = get_object_or_404(PurchaseOrder, po_number=po_number)
+
+        if not purchase_order.acknowledgment_date:
+            purchase_order.acknowledgment_date = datetime.now()
+            purchase_order.save()
+            return Response({"Success": "Your PO is acknowledged."}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"Detail": "Your PO is already acknowledged."}, status=status.HTTP_208_ALREADY_REPORTED)
 
 
 class PerformanceAPIView(APIView):
