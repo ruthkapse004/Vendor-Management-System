@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.manager import BaseManager
 from django.http.request import HttpRequest
 from django.shortcuts import get_object_or_404
@@ -32,14 +33,14 @@ class VendorViewSet(ModelViewSet):
             instance = queryset.filter(vendor_code=vendor_code).first()
             if instance is not None:
                 serializer = self.get_serializer(instance)
-                return Response(serializer.data)
+                return Response(serializer.data, status=status.HTTP_302_FOUND)
         return Response({"Error": "No Vendor found with requested vendor_code."}, status=status.HTTP_404_NOT_FOUND)
 
     def update(self, request, *args, **kwargs) -> Response:
         vendor_code = kwargs.get('pk')
         try:
             instance = self.get_queryset().get(vendor_code=vendor_code)
-        except instance.DoesNotExist:
+        except ObjectDoesNotExist:
             return Response({"Error": "No Vendor found with requested vendor_code."}, status=status.HTTP_404_NOT_FOUND)
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -51,7 +52,7 @@ class VendorViewSet(ModelViewSet):
         try:
             instance = self.get_queryset().get(vendor_code=vendor_code)
             instance.delete()
-        except instance.DoesNotExist:
+        except ObjectDoesNotExist:
             return Response({"Error": f"No Vendor found with requested vendor_code."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as ex:
             return Response({"Error": ex}, status=status.HTTP_400_BAD_REQUEST)
@@ -84,7 +85,7 @@ class PurchaseOrderViewSet(ModelViewSet):
             instance = queryset.filter(po_number=po_number).first()
             if instance is not None:
                 serializer = self.get_serializer(instance)
-                return Response(serializer.data)
+                return Response(serializer.data, status=status.HTTP_302_FOUND)
         return Response({"Error": "No Order found with requested po_number."}, status=status.HTTP_404_NOT_FOUND)
 
     def update(self, request, *args, **kwargs) -> Response:
@@ -96,7 +97,7 @@ class PurchaseOrderViewSet(ModelViewSet):
 
         try:
             instance = self.get_queryset().get(po_number=po_number)
-        except instance.DoesNotExist:
+        except ObjectDoesNotExist:
             return Response({"Error": "No order found with requested po_number."}, status=status.HTTP_404_NOT_FOUND)
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -108,7 +109,7 @@ class PurchaseOrderViewSet(ModelViewSet):
         try:
             instance = self.get_queryset().get(po_number=po_number)
             instance.delete()
-        except instance.DoesNotExist:
+        except ObjectDoesNotExist:
             return Response({"Error": "No order found with requested po_number."}, status=status.HTTP_404_NOT_FOUND)
         return Response({"detail": "Order deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
