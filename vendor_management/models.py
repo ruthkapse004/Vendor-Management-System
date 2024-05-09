@@ -35,7 +35,7 @@ class PurchaseOrder(models.Model):
     ]
 
     po_number = models.CharField(max_length=256, unique=True)
-    vendor = models.ForeignKey(Vendor, on_delete=models.PROTECT)
+    vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True)
     order_date = models.DateField(auto_now_add=True)
     items = models.JSONField()
     quantity = models.IntegerField(
@@ -56,7 +56,7 @@ class PurchaseOrder(models.Model):
 
 
 class HistoricalPerformance(models.Model):
-    vendor = models.ForeignKey(Vendor, on_delete=models.PROTECT)
+    vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True)
     date = models.DateField(auto_now=True)
     on_time_delivery_rate = models.FloatField(default=None, null=True)
     quality_rating_avg = models.FloatField(default=None, null=True)
